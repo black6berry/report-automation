@@ -1,33 +1,40 @@
 import datetime
+from pathlib import Path
 
-class TemplateFile():
+
+class DocumentGenerator:
     """
     Класс для работы с шаблонами файлов
     вызываемый метод генерирет определенный тип шаблона
-    Принимает параметры:
-    sheet - лист excel с данными
-    full_path_to_dir - полный путь до директории
-    path_folder - путь до папки куда сохранять готовые документы
-    path_template - путь до шаблона файла куда поставлять значения из excel файла
-    user_not_finished - список должников
     """
     user_not_finished = list()
-    def __init__(self, sheet, full_path_to_dir, path_folder, path_template, doc_templates):
-        self.sheet = sheet
-        self.full_path_to_dir = full_path_to_dir
-        self.path_folder = path_folder
-        self.path_template = path_template
-        self.doc_templates = doc_templates
 
 
-    @staticmethod
-    def create_type_files():
-        """Выбор типа файла для генерации"""
+    @classmethod
+    def create_doc_diary(
+            cls,
+            sheet,
+            full_path_to_dir: str,
+            doc_template: str,
+            user_not_finished=user_not_finished):
+        """
+        Генерация дневника
 
+        :param
+        sheet: Лист из Шаблона Excel файла
 
-    @staticmethod
-    def create_doc_diary(sheet, full_path_to_dir, path_folder, path_template, doc_template):
-        """Генерация дневника"""
+        :param
+        path_dir: Название директории к папке в которой будут лежать созданные файлы
+
+        :param
+        full_path_to_dir: Полный путь до папки с файлами
+
+        :param
+        doc_template: Путь до шаблон файла на основе чего будет идти генерация
+
+        :param
+        user_not_finished: Список пользователей кто не получил оценку, берется из файла excel_templte
+        """
         for num in range(2, len(list(sheet.rows)) + 1):
             FIO = sheet['A' + str(num)].value
             signature = FIO.split(' ')[0] if FIO else "Нет данных"
@@ -90,19 +97,62 @@ class TemplateFile():
             doc_template.render(context)
 
             # Сохранение документа дневник
-            doc_template.save(full_path_to_dir / f"{FIO}_дневник.docx")
+            full_path_to_file = full_path_to_dir / f"{FIO}_дневник.docx"
+            doc_template.save(full_path_to_file)
 
-    @staticmethod
-    def create_doc_charcteristics():
+            print(f"""
+                   Файл {full_path_to_file} успешно создан
+                   Список должниов - {user_not_finished}
+                   """)
+
+
+    @classmethod
+    def create_doc_characteristics(cls):
         """Генерация характеристики"""
         pass
 
-    @staticmethod
-    def create_doc_individual_task():
+    @classmethod
+    def create_doc_individual_task(cls):
         """Генерация индивидуальных задания"""
         pass
 
-    @staticmethod
-    def create_doc_report():
+
+    @classmethod
+    def create_doc_report(cls):
         """Генерация отчеты"""
         pass
+
+
+    @classmethod
+    def create_doc(
+            cls,
+            type_file: int,
+            sheet,
+            full_path_to_dir,
+            doc_template,
+        ):
+        """
+        .. note::
+            Выбор типа файла для генерации.
+            Ф-я принимает тип файла:
+        1 - Отчеты
+
+        2 - Дневники
+
+        3 - Характеристика
+
+        4 - Индивидуальное задание
+        """
+        if type_file == 1:
+            DocumentGenerator.create_doc_report()
+        elif type_file == 2:
+            DocumentGenerator.create_doc_diary(sheet, full_path_to_dir, doc_template)
+        elif type_file == 3:
+            DocumentGenerator.create_doc_characteristics()
+        elif type_file == 4:
+            DocumentGenerator.create_doc_individual_task()
+        else:
+            print(f"""
+            Неизвестный тип документа: {type_file}, 
+            Укажите правильный тип документа который хотите сгенерировать.
+            """)
