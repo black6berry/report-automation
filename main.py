@@ -77,7 +77,9 @@ def main():
         while True:
             try:
                 type_file_int = int(input("Выберите цифру: "))
-                if type_file_int == 1 or type_file_int == 2 or type_file_int == 3 or type_file_int == 4:
+                if type_file_int == 1:
+                    print("Данный функционал еще не реализован")
+                if type_file_int == 2 or type_file_int == 3 or type_file_int == 4:
                     break
                 else:
                     raise ValueError
@@ -107,13 +109,10 @@ def main():
         # Определяем страницу с рабочей областью
         sheet = wb['Практика']
 
-        new_doc = DocumentGenerator().create_doc(type_file=type_file_int,
-                                                 sheet=sheet,
+        new_doc = DocumentGenerator().create_doc(type_file=type_file_int, sheet=sheet,
                                                  full_path_to_dir=full_path_to_dir,
-                                                 doc_template=doc_template,
-                                                 )
-        # DocumentGenerator.create_doc(path_dir)
-        # DocumentGenerator.create_doc_diary(path_dir)
+                                                 doc_template=doc_template)
+
 
         repeat = str(input("Нужно сгенерировать еще файлы д\н? "))
         if repeat == "Н" or repeat == "н" or repeat == "F" or repeat == "f":
@@ -123,5 +122,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # create_doc_diary()
     pass
